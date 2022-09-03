@@ -301,6 +301,38 @@ namespace Dapper_BDSQL.Controller
             }
         }
 
+        public void DeleteProduct(string name)              //Удаление в базе продукта с полем Name по значению name
+        {
+            if (ReadProduct().Count > 1)
+            {
+                MyLog.Log($"Start deleting the product with Name [{name}] in SQL-base", LogLevel.Information);
+                int rows = connection.Execute($"DELETE FROM [dbo].[Product] WHERE Name='{name}'");
+                if (rows > 0)
+                {
+                    MyLog.Log($"The product with Name [{name}] was deleted in SQL-base successfully", LogLevel.Information);
+                    Console.WriteLine($"The product with Name [{name}] was deleted!");
+                }
+                else
+                    MyLog.Log($"The product with Nmae [{name}] wasn`t deleted in SQL-base", LogLevel.Warning);
+            }
+        }
+
+        public void DeleteProduct(int id)              //Удаление в базе продукта с полем Id по значению id
+        {
+            if (ReadProduct().Count > 1)
+            {
+                MyLog.Log($"Start deleting the product with id [{id}] in SQL-base", LogLevel.Information);
+                int rows = connection.Execute($"DELETE FROM [dbo].[Product] WHERE Id='{id}'");
+                if (rows > 0)
+                {
+                    MyLog.Log($"The product with Name id [{id}] was deleted in SQL-base successfully", LogLevel.Information);
+                    Console.WriteLine($"The product with id [{id}] was deleted!");
+                }
+                else
+                    MyLog.Log($"The product with id [{id}] wasn`t deleted in SQL-base", LogLevel.Warning);
+            }
+        }
+
         public void DeleteProduct(string col, string name)              //Удаление в базе продукта с полем col, котoрое имеет значение value типа string
         {
             if (ReadProduct().Count > 1)

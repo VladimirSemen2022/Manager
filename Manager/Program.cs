@@ -183,7 +183,7 @@ namespace Manager
                                 if (tmpId != 0)
                                 {
                                     MyLog.Log($"3p [deleting product]: The product witn Id [{products[tmpId-1].Id}] and Name [{products[tmpId - 1].Name}] was deleted", LogLevel.Information);
-                                    newLink.DeleteProduct("Id", products[tmpId-1].Id);
+                                    newLink.DeleteProduct(products[tmpId-1].Id);
                                     Console.WriteLine($"The product witn Id [{products[tmpId - 1].Id}] and Name [{products[tmpId - 1].Name}] was deleted!");
                                     products = newLink.ReadProduct();
                                 }
