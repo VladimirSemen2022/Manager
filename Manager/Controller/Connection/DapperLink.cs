@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using Manager.Model;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,8 @@ namespace Dapper_BDSQL.Controller
         public List<Provider> ReadProvider(bool show=false)     //Чтение списка поставщиков, если show = true то считанные из базы данные вывести на экран
         {
             MyLog.Log("Start providers read from SQL-base", LogLevel.Information);
-            List<Provider> providers = (List<Provider>)connection.Query<Provider>("SELECT * FROM [Provider];");
+            //List<Provider> providers = (List<Provider>)connection.Query<Provider>("SELECT * FROM [Provider];");
+            List<Provider> providers = connection.GetAll<Provider>().ToList();
             if (providers.Count != 0)
             {
                 MyLog.Log("Providers list was read from SQL-base successfully", LogLevel.Information);
@@ -56,7 +58,8 @@ namespace Dapper_BDSQL.Controller
         public List<Category> ReadCategory(bool show=false)     //Чтение списка категорий продуктов, если show = true то считанные из базы данные вывести на экран
         {
             MyLog.Log("Start categories read from SQL-base", LogLevel.Information);
-            List<Category> categories = (List<Category>)connection.Query<Category>("SELECT * FROM [Category];");
+            //List<Category> categories = (List<Category>)connection.Query<Category>("SELECT * FROM [Category];");
+            List<Category> categories = connection.GetAll<Category>().ToList();
             if (categories.Count != 0)
             {
                 MyLog.Log("Categories list was read from SQL-base successfully", LogLevel.Information);
@@ -78,7 +81,8 @@ namespace Dapper_BDSQL.Controller
         public List<Product> ReadProduct(bool show=false)       //Чтение списка продуктов, если show = true то считанные из базы данные вывести на экран
         {
             MyLog.Log("Start products read from SQL-base", LogLevel.Information);
-            List<Product> products = (List<Product>)connection.Query<Product>("SELECT * FROM [Product];");
+            //List<Product> products = (List<Product>)connection.Query<Product>("SELECT * FROM [Product];");
+            List<Product> products = connection.GetAll<Product>().ToList();
             if (products.Count != 0)
             {
                 MyLog.Log("Products list was read from SQL-base successfully", LogLevel.Information);
@@ -103,7 +107,8 @@ namespace Dapper_BDSQL.Controller
             if (newProvider != null)
             {
                 MyLog.Log($"Start adding new provider [{newProvider.ProviderFullName}] to SQL-base", LogLevel.Information) ;
-                int rows = connection.Execute($"INSERT INTO [dbo].[Provider]([ProviderFullName],[ProviderShortName],[Address])VALUES (\'{newProvider.ProviderFullName}\', \'{newProvider.ProviderShortName}\', \'{newProvider.Address}\');");
+                //int rows = connection.Execute($"INSERT INTO [dbo].[Provider]([ProviderFullName],[ProviderShortName],[Address])VALUES (\'{newProvider.ProviderFullName}\', \'{newProvider.ProviderShortName}\', \'{newProvider.Address}\');");
+                long rows = connection.Insert<Provider>(newProvider);
                 if (rows > 0)
                 {
                     MyLog.Log($"New provider [{newProvider.ProviderFullName}] was added to SQL-base successfully", LogLevel.Information);
@@ -119,7 +124,8 @@ namespace Dapper_BDSQL.Controller
             if (newCategory != null)
             {
                 MyLog.Log($"Start adding new product category [{newCategory.CategoryName}] to SQL-base", LogLevel.Information);
-                int rows = connection.Execute($"INSERT INTO [dbo].[Category]([CategoryName])VALUES (\'{newCategory.CategoryName}\');");
+                //int rows = connection.Execute($"INSERT INTO [dbo].[Category]([CategoryName])VALUES (\'{newCategory.CategoryName}\');");
+                long rows = connection.Insert<Category>(newCategory);
                 if (rows > 0)
                 {
                     MyLog.Log($"New product category [{newCategory.CategoryName}] was added to SQL-base successfully", LogLevel.Information);
@@ -135,7 +141,8 @@ namespace Dapper_BDSQL.Controller
             if (newProduct != null)
             {
                 MyLog.Log($"Start adding new product category [{newProduct.Name}] to SQL-base", LogLevel.Information);
-                int rows = connection.Execute($"INSERT INTO [dbo].[Product]([Name],[CategoryId],[ProviderId],[Price])VALUES (\'{newProduct.Name}\', \'{newProduct.CategoryId}\',  \'{newProduct.ProviderId}\', \'{newProduct.Price}\');");
+                //int rows = connection.Execute($"INSERT INTO [dbo].[Product]([Name],[CategoryId],[ProviderId],[Price])VALUES (\'{newProduct.Name}\', \'{newProduct.CategoryId}\',  \'{newProduct.ProviderId}\', \'{newProduct.Price}\');");
+                long rows = connection.Insert<Product>(newProduct);
                 if (rows > 0)
                 {
                     MyLog.Log($"New product [{newProduct.Name}] was added to SQL-base successfully", LogLevel.Information);
@@ -150,10 +157,11 @@ namespace Dapper_BDSQL.Controller
         {
             if (ReadProvider().Count > 1)
             {
-                var sqlQuery = $"UPDATE Provider SET ProviderFullName = @ProviderFullName, ProviderShortName = @ProviderShortName, Address = @Address WHERE ProviderId = \'{id}\'";
+                //var sqlQuery = $"UPDATE Provider SET ProviderFullName = @ProviderFullName, ProviderShortName = @ProviderShortName, Address = @Address WHERE ProviderId = \'{id}\'";
                 MyLog.Log($"Start changing provider with ProviderId [{id}] in SQL-base", LogLevel.Information);
-                int rows = connection.Execute(sqlQuery, newProvider);
-                if (rows > 0)
+                //int rows = connection.Execute(sqlQuery, newProvider);
+                bool rows = connection.Update<Provider>(newProvider);
+                if (rows)
                 {
                     MyLog.Log($"Provider with ProviderId [{id}] was changed in SQL-base successfully", LogLevel.Information);
                     Console.WriteLine($"Provider with ProviderId [{id}] was changed successfully!");
@@ -167,10 +175,11 @@ namespace Dapper_BDSQL.Controller
         {
             if (ReadCategory().Count > 1)
             {
-                MyLog.Log($"Start changing the product category with Name [{name}] in SQL-base", LogLevel.Information);
+                //MyLog.Log($"Start changing the product category with Name [{name}] in SQL-base", LogLevel.Information);
                 var sqlQuery = $"UPDATE Category SET CategoryName = @CategoryName WHERE CategoryName = \'{name}\'";
-                int rows = connection.Execute(sqlQuery, newCategory);
-                if (rows > 0)
+                //int rows = connection.Execute(sqlQuery, newCategory);
+                bool rows = connection.Update<Category>(newCategory);
+                if (rows)
                 {
                     MyLog.Log($"The product category with Name [{name}] was changed in SQL-base successfully", LogLevel.Information);
                     Console.WriteLine($"Category with Name [{name}] was changed successfully!");
@@ -185,9 +194,10 @@ namespace Dapper_BDSQL.Controller
             if (ReadProduct().Count > 1)
             {
                 MyLog.Log($"Start changing the product with Name [{name}] in SQL-base", LogLevel.Information);
-                var sqlQuery = $"UPDATE Product SET Name = @Name, CategoryId = @CategoryId, ProviderId = @ProviderId, Price = @Price WHERE Name = \'{name}\'";
-                int rows = connection.Execute(sqlQuery, newProduct);
-                if (rows > 0)
+                //var sqlQuery = $"UPDATE Product SET Name = @Name, CategoryId = @CategoryId, ProviderId = @ProviderId, Price = @Price WHERE Name = \'{name}\'";
+                //int rows = connection.Execute(sqlQuery, newProduct);
+                bool rows = connection.Update<Product>(newProduct);
+                if (rows)
                 {
                     MyLog.Log($"The product with Name [{name}] was changed in SQL-base successfully", LogLevel.Information);
                     Console.WriteLine($"Product with Name [{name}] was changed!");
@@ -213,9 +223,14 @@ namespace Dapper_BDSQL.Controller
                     if (Console.ReadKey().Key == ConsoleKey.Y)
                     {
                         MyLog.Log($"The request to deleting products with ProviderId [{id}] in SQL-base was approved", LogLevel.Information);
-                        DeleteProduct("ProviderId", id);
-                        int rows = connection.Execute($"DELETE FROM [dbo].[Provider] WHERE ProviderId='{id}'");
-                        if (rows > 0)
+                        foreach (var item in products)
+                        {
+                            if (item.ProviderId == id)
+                                DeleteProduct(item);
+                        }
+                        //int rows = connection.Execute($"DELETE FROM [dbo].[Provider] WHERE ProviderId='{id}'");
+                        bool rows = connection.Delete<Provider>(providers.First(x=>x.Id ==id));
+                        if (rows)
                         {
                             MyLog.Log($"The provider with ProviderId [{id}] was deleted in SQL-base successfully", LogLevel.Information);
                             Console.WriteLine($"Provider with ProviderId [{id}] was deleted!");
@@ -231,8 +246,9 @@ namespace Dapper_BDSQL.Controller
                 }
                 else
                 {
-                    int rows = connection.Execute($"DELETE FROM [dbo].[Provider] WHERE ProviderId='{id}'");
-                    if (rows > 0)
+                    //int rows = connection.Execute($"DELETE FROM [dbo].[Providers] WHERE Id='{id}'");
+                    bool rows = connection.Delete<Provider>(providers.First(x => x.Id == id));
+                    if (rows)
                     {
                         MyLog.Log($"Provider with ProviderId [{id}] was deleted in SQL-base successfully", LogLevel.Information);
                         Console.WriteLine($"Provider with ProviderId [{id}] was deleted!");
@@ -251,7 +267,7 @@ namespace Dapper_BDSQL.Controller
         public void DeleteCategory(int id)                         //Удаление в базе категории продуктов с именем name
         {
             List<Category> categories = ReadCategory();
-            MyLog.Log($"Checking the product category with Id [{id}] in SQL-base", LogLevel.Information);
+            MyLog.Log($"Checking the category of product with Id [{id}] in SQL-base", LogLevel.Information);
             if (categories.Count > 1)
             {
                 MyLog.Log($"Checking the list of the products for the presence of the corresponding category with Id [{id}] in SQL-base", LogLevel.Information);
@@ -265,10 +281,15 @@ namespace Dapper_BDSQL.Controller
                     if (Console.ReadKey().Key == ConsoleKey.Y)
                     {
                         MyLog.Log($"The request to deleting products with CategoryId [{id}] in SQL-base was approved", LogLevel.Information);
-                        DeleteProduct("CategoryId", id);
-                        MyLog.Log($"Start deleting the product category with CategoryId [{id}] in SQL-base", LogLevel.Information);
-                        int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryId='{id}'");
-                        if (rows > 0)
+                        foreach (var item in products)
+                        {
+                            if (item.CategoryId==id)
+                                DeleteProduct(item);
+                        }
+                        MyLog.Log($"Start deleting the category of product with CategoryId [{id}] in SQL-base", LogLevel.Information);
+                        //int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryId='{id}'");
+                        bool rows = connection.Delete<Category>(categories.First(x => x.Id == id));
+                        if (rows)
                         {
                             MyLog.Log($"The category of product with Id [{id}] was deleted in SQL-base successfully", LogLevel.Information);
                             Console.WriteLine($"The category of product with Id [{id}] was deleted!");
@@ -284,14 +305,15 @@ namespace Dapper_BDSQL.Controller
                 }
                 else
                 {
-                    int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryId='{id}'");
-                    if (rows > 0)
+                    //int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryId='{id}'");
+                    bool rows = connection.Delete<Category>(categories.First(x => x.Id == id));
+                    if (rows)
                     {
-                        MyLog.Log($"The product category with Id [{id}] was deleted in SQL-base successfully", LogLevel.Information);
-                        Console.WriteLine($"The product category with Id [{id}] was deleted!");
+                        MyLog.Log($"The category of product with Id [{id}] was deleted in SQL-base successfully", LogLevel.Information);
+                        Console.WriteLine($"The category of product with Id [{id}] was deleted!");
                     }
                     else
-                        MyLog.Log($"The product category with Id [{id}] wasn`t deleted in SQL-base", LogLevel.Warning);
+                        MyLog.Log($"The category of product with Id [{id}] wasn`t deleted in SQL-base", LogLevel.Warning);
                 }
             }
             else
@@ -301,6 +323,23 @@ namespace Dapper_BDSQL.Controller
             }
         }
 
+        public void DeleteProduct(Product product)              //Удаление в базе продукта с полем Name по значению name
+        {
+            if (ReadProduct().Count > 1)
+            {
+                MyLog.Log($"Start deleting the product with Name [{product.Name}] in SQL-base", LogLevel.Information);
+                //int rows = connection.Execute($"DELETE FROM [dbo].[Product] WHERE Name='{name}'");
+                bool rows = connection.Delete<Product>(product);
+                if (rows)
+                {
+                    MyLog.Log($"The product with Name [{product.Name}] was deleted in SQL-base successfully", LogLevel.Information);
+                    Console.WriteLine($"The product with Name [{product.Name}] was deleted!");
+                }
+                else
+                    MyLog.Log($"The product with Nmae [{product.Name}] wasn`t deleted in SQL-base", LogLevel.Warning);
+            }
+        }
+        
         public void DeleteProduct(string name)              //Удаление в базе продукта с полем Name по значению name
         {
             if (ReadProduct().Count > 1)
@@ -323,6 +362,7 @@ namespace Dapper_BDSQL.Controller
             {
                 MyLog.Log($"Start deleting the product with id [{id}] in SQL-base", LogLevel.Information);
                 int rows = connection.Execute($"DELETE FROM [dbo].[Product] WHERE Id='{id}'");
+                
                 if (rows > 0)
                 {
                     MyLog.Log($"The product with Name id [{id}] was deleted in SQL-base successfully", LogLevel.Information);

@@ -12,6 +12,14 @@ namespace Dapper_BDSQL
         public int ProviderId { get; set; }
         public string Price { get; set; }
 
+        public Product()
+        {
+            this.Id = 0;
+            this.Name = string.Empty;
+            this.CategoryId = 0;
+            this.ProviderId = 0;
+            this.Price = string.Empty;
+        }
         public Product(int Id=0, string Name="", int CategoryId=0, int ProviderId=0, string Price="")
         {
             this.Id = Id;

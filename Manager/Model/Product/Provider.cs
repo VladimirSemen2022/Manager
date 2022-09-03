@@ -8,14 +8,23 @@ namespace Manager.Model
 {
     class Provider
     {
-        public int ProviderId { get; set; }
+        public int Id { get; set; }
+        //public int ProviderId { get; set; }
         public string ProviderFullName { get; set; }
         public string ProviderShortName { get; set; }
         public string Address { get; set; }
 
-        public Provider(int ProviderId=0, string ProviderFullName="", string ProviderShortName="", string Address="")
+        public Provider()
         {
-            this.ProviderId = ProviderId;
+            this.Id = 0;
+            //this.ProviderId = 0;
+            this.ProviderFullName = string.Empty;
+            this.ProviderShortName = string.Empty;
+            this.Address = string.Empty;
+        }
+        public Provider(int Id=0, string ProviderFullName="", string ProviderShortName="", string Address="")
+        {
+            this.Id = Id;
             this.ProviderFullName = ProviderFullName;
             this.ProviderShortName = ProviderShortName;
             this.Address = Address;
@@ -23,7 +32,7 @@ namespace Manager.Model
 
         public override string ToString()
         {
-            return $"Name [{ProviderFullName}], Address [{Address}]";
+            return $"Id [{Id}] Name [{ProviderFullName}], Address [{Address}]";
         }
     }
 }

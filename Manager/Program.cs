@@ -99,7 +99,7 @@ namespace Manager
                                             {
                                                 choice = Console.ReadLine();
                                                 Int32.TryParse(choice, out tmpId);
-                                                if (tmpId <= categories.Count && tmpId > 0) newProduct.CategoryId = categories[tmpId - 1].CategoryId;
+                                                if (tmpId <= categories.Count && tmpId > 0) newProduct.CategoryId = categories[tmpId - 1].Id;
                                             } while (tmpId > categories.Count || tmpId <= 0);
                                             Console.WriteLine("Input a number of provider from the list below:");
                                             providers = newLink.ReadProvider(true);
@@ -108,7 +108,7 @@ namespace Manager
                                             {
                                                 choice = Console.ReadLine();
                                                 Int32.TryParse(choice, out tmpId);
-                                                if (tmpId <= providers.Count && tmpId > 0) newProduct.ProviderId = providers[tmpId - 1].ProviderId;
+                                                if (tmpId <= providers.Count && tmpId > 0) newProduct.ProviderId = providers[tmpId - 1].Id;
                                             } while (tmpId > providers.Count && tmpId <= 0);
                                             Console.Write("Input new price of the product  you want to change - ");
                                             newProduct.Price = Console.ReadLine();
@@ -146,7 +146,7 @@ namespace Manager
                             do {
                                 choice = Console.ReadLine();
                                 Int32.TryParse(choice, out tmpId);
-                                if (tmpId <= categories.Count && tmpId > 0) newProduct.CategoryId = categories[tmpId - 1].CategoryId;
+                                if (tmpId <= categories.Count && tmpId > 0) newProduct.CategoryId = categories[tmpId - 1].Id;
                             } while (tmpId > categories.Count || tmpId <= 0);
                             Console.WriteLine("Input a number of provider from the list below:");
                             providers = newLink.ReadProvider(true);
@@ -154,7 +154,7 @@ namespace Manager
                             do {
                                 choice = Console.ReadLine();
                                 Int32.TryParse(choice, out tmpId);
-                                if (tmpId <= providers.Count && tmpId > 0) newProduct.ProviderId = providers[tmpId - 1].ProviderId;
+                                if (tmpId <= providers.Count && tmpId > 0) newProduct.ProviderId = providers[tmpId - 1].Id;
                             } while(tmpId > providers.Count && tmpId <= 0);
                             Console.Write("Input new price of the product  you want to change - ");
                             newProduct.Price = Console.ReadLine();
@@ -183,7 +183,7 @@ namespace Manager
                                 if (tmpId != 0)
                                 {
                                     MyLog.Log($"3p [deleting product]: The product witn Id [{products[tmpId-1].Id}] and Name [{products[tmpId - 1].Name}] was deleted", LogLevel.Information);
-                                    newLink.DeleteProduct(products[tmpId-1].Id);
+                                    newLink.DeleteProduct(products[tmpId-1]);
                                     Console.WriteLine($"The product witn Id [{products[tmpId - 1].Id}] and Name [{products[tmpId - 1].Name}] was deleted!");
                                     products = newLink.ReadProduct();
                                 }
@@ -286,7 +286,7 @@ namespace Manager
                                 {
                                     MyLog.Log($"7p [deleting the category of product]: The category of product with Id [{tmpId}] and Name [{categories[tmpId - 1].CategoryName}] was deleted", LogLevel.Information);
                                     Console.WriteLine($"The category of product with Id [{tmpId}] and Name [{categories[tmpId - 1].CategoryName}] was deleted!");
-                                    newLink.DeleteCategory(tmpId);
+                                    newLink.DeleteCategory(categories[tmpId-1].Id);
                                     categories = newLink.ReadCategory();
                                 }
                                 else
@@ -377,9 +377,9 @@ namespace Manager
                                 } while (tmpId > providers.Count || tmpId < 0);
                                 if (tmpId != 0)
                                 {
-                                    MyLog.Log($"11p [deleting the provider of product]: The provider of product witn Id [{providers[tmpId - 1].ProviderId}] and short Name [{providers[tmpId - 1].ProviderShortName}] was deleted", LogLevel.Information);
-                                    Console.WriteLine($"The provider of product witn Id [{providers[tmpId - 1].ProviderId}] and short Name [{providers[tmpId - 1].ProviderShortName}] was deleted!");
-                                    newLink.DeleteProvider(providers[tmpId - 1].ProviderId);
+                                    MyLog.Log($"11p [deleting the provider of product]: The provider of product witn Id [{providers[tmpId - 1].Id}] and short Name [{providers[tmpId - 1].ProviderShortName}] was deleted", LogLevel.Information);
+                                    Console.WriteLine($"The provider of product witn Id [{providers[tmpId - 1].Id}] and short Name [{providers[tmpId - 1].ProviderShortName}] was deleted!");
+                                    newLink.DeleteProvider(providers[tmpId - 1].Id);
                                     providers = newLink.ReadProvider();
                                 }
                                 else
