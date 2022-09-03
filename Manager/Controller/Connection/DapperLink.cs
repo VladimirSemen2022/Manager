@@ -82,8 +82,16 @@ namespace Dapper_BDSQL.Controller
             if (products.Count != 0)
             {
                 MyLog.Log("Products list was read from SQL-base successfully", LogLevel.Information);
-                Console.WriteLine();
-                if (show) products.ToList().ForEach(Console.WriteLine);
+                if (show)
+                {
+                    Console.WriteLine();
+                    int iter = 1;
+                    foreach (var item in products)
+                    {
+                        Console.WriteLine($"{iter++}) {item.ToString()}");
+                    }
+                    //if (show) products.ToList().ForEach(Console.WriteLine);
+                }
             }
             else
                 MyLog.Log("Products list wasn`t read from SQL-base or is empty", LogLevel.Warning);
@@ -240,50 +248,50 @@ namespace Dapper_BDSQL.Controller
             }
         }
 
-        public void DeleteCategory(string name)                         //Удаление в базе категории продуктов с именем name
+        public void DeleteCategory(int id)                         //Удаление в базе категории продуктов с именем name
         {
             List<Category> categories = ReadCategory();
-            MyLog.Log($"Checking the product category with CategoryName [{name}] in SQL-base", LogLevel.Information);
+            MyLog.Log($"Checking the product category with Id [{id}] in SQL-base", LogLevel.Information);
             if (categories.Count > 1)
             {
-                MyLog.Log($"Checking the list of the products for the presence of the corresponding category with Name [{name}] in SQL-base", LogLevel.Information);
+                MyLog.Log($"Checking the list of the products for the presence of the corresponding category with Id [{id}] in SQL-base", LogLevel.Information);
                 List<Product> products = ReadProduct();
-                int catId = categories.First(x => x.CategoryName.ToString().Equals(name.ToString())).CategoryId;
-                if (products.Count > 0 && products.Where(x=>x.CategoryId==catId).Any())             //Проверка наличия в продуктах привязанной категории с Id соответсвующим именем name
+                //int catId = categories.First(x => x.CategoryName.ToString().Equals(name.ToString())).CategoryId;
+                if (products.Count > 0 && products.Where(x=>x.CategoryId==id).Any())             //Проверка наличия в продуктах привязанной категории с Id соответсвующим именем name
                 {
-                    MyLog.Log($"The products with CategoryId [{catId}] and Name [{name}] in SQL-base was found", LogLevel.Information);
-                    Console.WriteLine($"Some products in the list have the category which you want to delete! You want to delete those products with category [{name}] Yes/No?");
-                    MyLog.Log($"The request to deleting products with CategoryId [{catId}] and Name [{name}] in SQL-base was found", LogLevel.Information);
+                    MyLog.Log($"The products with CategoryId [{id}] in SQL-base was found", LogLevel.Information);
+                    Console.WriteLine($"Some products in the list have the category which you want to delete! You want to delete those products with categoryId [{id}] Yes/No?");
+                    MyLog.Log($"The request to deleting products with CategoryId [{id}] in SQL-base was found", LogLevel.Information);
                     if (Console.ReadKey().Key == ConsoleKey.Y)
                     {
-                        MyLog.Log($"The request to deleting products with CategoryId [{catId}] and Name [{name}] in SQL-base was approved", LogLevel.Information);
-                        DeleteProduct("CategoryId", catId);
-                        MyLog.Log($"Start deleting the product category with CategoryName [{name}] in SQL-base", LogLevel.Information);
-                        int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryName='{name}'");
+                        MyLog.Log($"The request to deleting products with CategoryId [{id}] in SQL-base was approved", LogLevel.Information);
+                        DeleteProduct("CategoryId", id);
+                        MyLog.Log($"Start deleting the product category with CategoryId [{id}] in SQL-base", LogLevel.Information);
+                        int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryId='{id}'");
                         if (rows > 0)
                         {
-                            MyLog.Log($"The product category with CategoryName [{name}] was deleted in SQL-base successfully", LogLevel.Information);
-                            Console.WriteLine($"The product category with CategoryName [{name}] was deleted!");
+                            MyLog.Log($"The category of product with Id [{id}] was deleted in SQL-base successfully", LogLevel.Information);
+                            Console.WriteLine($"The category of product with Id [{id}] was deleted!");
                         }
                         else
-                            MyLog.Log($"The product category with CategoryName [{name}] wasn`t deleted in SQL-base", LogLevel.Warning);
+                            MyLog.Log($"The category of product with Id [{id}] wasn`t deleted in SQL-base", LogLevel.Warning);
                     }
                     else
                     {
-                        MyLog.Log($"The request to deleting products with CategoryId [{catId}] and Name [{name}] in SQL-base was denied", LogLevel.Information);
-                        Console.WriteLine($"DELETE operation has been canceled");
+                        MyLog.Log($"The request to deleting category of product with Id [{id}] in SQL-base was denied", LogLevel.Information);
+                        Console.WriteLine($"DELETING operation has been canceled");
                     }
                 }
                 else
                 {
-                    int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryName='{name}'");
+                    int rows = connection.Execute($"DELETE FROM [dbo].[Category] WHERE CategoryId='{id}'");
                     if (rows > 0)
                     {
-                        MyLog.Log($"The product category with CategoryName [{name}] was deleted in SQL-base successfully", LogLevel.Information);
-                        Console.WriteLine($"The product category with CategoryName [{name}] was deleted!");
+                        MyLog.Log($"The product category with Id [{id}] was deleted in SQL-base successfully", LogLevel.Information);
+                        Console.WriteLine($"The product category with Id [{id}] was deleted!");
                     }
                     else
-                        MyLog.Log($"The product category with CategoryName [{name}] wasn`t deleted in SQL-base", LogLevel.Warning);
+                        MyLog.Log($"The product category with Id [{id}] wasn`t deleted in SQL-base", LogLevel.Warning);
                 }
             }
             else
