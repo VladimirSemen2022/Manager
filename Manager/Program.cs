@@ -69,70 +69,98 @@ namespace Manager
                     switch (choice)
                     {
                         case "1":
-                            MyLog.Log("1p was chosen [searching and correcting product]", LogLevel.Information);
+                            MyLog.Log("1p was chosen [searching and correcting of product]", LogLevel.Information);
                             Console.Clear();
                             if (products.Count > 0)
                             {
-                                MyLog.Log("1p [searching and correcting product]: Input data", LogLevel.Information);
-                                Console.Write("Input name of product you want to search - ");
-                                name = Console.ReadLine();
-                                MyLog.Log($"1p [searching and correcting product]: Search product with name [{name}]", LogLevel.Information);
-                                if (products.Exists(x => x.Name.ToLower() == name.ToLower()))
+                                MyLog.Log("1p [searching and correcting of product]: Input data", LogLevel.Information);
+                                name = string.Empty;
+                                string tmp = string.Empty;
+                                List <Product> searchingProduct = new List<Product>();
+                                Console.Write("\nInput name of product you want to search - ");
+                                ConsoleKeyInfo input = Console.ReadKey();
+                                name += input.KeyChar;
+                                do
                                 {
-                                    newProduct = products.Find(x => x.Name.ToLower() == name.ToLower());
-                                    MyLog.Log($"1p [searching and correcting product]: The product with name {name} was found", LogLevel.Information);
-                                    Console.WriteLine($"\n{products[products.FindIndex(x => x.Name.ToLower() == name.ToLower())].ToString()}\n");
-                                    Console.WriteLine("\nDo you want to correct this product? Press Y if Yes and any kay if No\n");
-                                    if (Console.ReadKey().Key == ConsoleKey.Y)
+                                    searchingProduct.Clear();
+                                    tmp = $"\nInput name of product you want to search - {name.ToString()}";
+                                    Console.Clear();
+                                    Console.Write(tmp);
+                                    Console.WriteLine("\nAfter searching one producty you can press the Enter key if you want to correct this product \nor press the Escape(Esc) key to exit from the searching\n");
+                                    Console.SetCursorPosition(tmp.Length, 1);
+                                    //input = Console.ReadKey();
+                                    //name += input.KeyChar;
+                                    Console.SetCursorPosition(0, 6);
+                                    foreach (var item in products)
                                     {
+                                        if (item.Name.ToLower().Contains(name.ToLower()))
+                                        {
+                                            Console.WriteLine(item.ToString());
+                                            searchingProduct.Add(item);
+                                        }
+                                    }
+                                    input = Console.ReadKey();
+                                    if (input.Key == ConsoleKey.Backspace && name.Length > 0)
+                                        name = name.Remove(name.Length - 1, 1);
+                                    else
+                                        name += input.KeyChar;
+                                    Console.WriteLine();
+                                    //name = Console.ReadLine();
+                                } while (!(input.Key == ConsoleKey.Enter && searchingProduct.Count==1) && input.Key != ConsoleKey.Escape);
+                                if (input.Key != ConsoleKey.Escape)
+                                {
+                                    name = searchingProduct[0].Name;
+                                    newProduct = searchingProduct[0];
+                                    MyLog.Log($"1p [searching and correcting of product]: Search product with name [{name}]", LogLevel.Information);
                                         MyLog.Log($"1p [searching and correcting product]: Choose operation of correct product with name {name}", LogLevel.Information);
                                         MyLog.Log($"1p [searching and correcting product]: Inputting new data", LogLevel.Information);
                                         Console.Write("\nInput new name of the product - ");
                                         newProduct.Name = Console.ReadLine();
                                         Console.WriteLine("\nDo you want to change any data of this product? Press Y if Yes and any kay if No\n");
-                                        if (Console.ReadKey().Key == ConsoleKey.Y)
+                                    if (Console.ReadKey().Key == ConsoleKey.Y)
+                                    {
+                                        Console.WriteLine("Input a number of the category from the list below:");
+                                        categories = newLink.ReadCategory(true);
+                                        tmpId = -1;
+                                        do
                                         {
-                                            Console.WriteLine("Input a number of the category from the list below:");
-                                            categories = newLink.ReadCategory(true);
-                                            tmpId = -1;
-                                            do
-                                            {
-                                                choice = Console.ReadLine();
-                                                Int32.TryParse(choice, out tmpId);
-                                                if (tmpId <= categories.Count && tmpId > 0) newProduct.CategoryId = categories[tmpId - 1].Id;
-                                            } while (tmpId > categories.Count || tmpId <= 0);
-                                            Console.WriteLine("Input a number of provider from the list below:");
-                                            providers = newLink.ReadProvider(true);
-                                            tmpId = -1;
-                                            do
-                                            {
-                                                choice = Console.ReadLine();
-                                                Int32.TryParse(choice, out tmpId);
-                                                if (tmpId <= providers.Count && tmpId > 0) newProduct.ProviderId = providers[tmpId - 1].Id;
-                                            } while (tmpId > providers.Count && tmpId <= 0);
-                                            Console.Write("Input new price of the product  you want to change - ");
-                                            newProduct.Price = Console.ReadLine();
-                                            MyLog.Log($"1p [searching and correcting product]: Inputed new product with data: name {newProduct.Name} categoryId {newProduct.CategoryId} providerId {newProduct.ProviderId} price {newProduct.Price}", LogLevel.Information);
-                                        }
+                                            choice = Console.ReadLine();
+                                            Int32.TryParse(choice, out tmpId);
+                                            if (tmpId <= categories.Count && tmpId > 0) newProduct.CategoryId = categories[tmpId - 1].Id;
+                                        } while (tmpId > categories.Count || tmpId <= 0);
+                                        Console.WriteLine("Input a number of provider from the list below:");
+                                        providers = newLink.ReadProvider(true);
+                                        tmpId = -1;
+                                        do
+                                        {
+                                            choice = Console.ReadLine();
+                                            Int32.TryParse(choice, out tmpId);
+                                            if (tmpId <= providers.Count && tmpId > 0) newProduct.ProviderId = providers[tmpId - 1].Id;
+                                        } while (tmpId > providers.Count && tmpId <= 0);
+                                        Console.Write("Input new price of the product  you want to change - ");
+                                        newProduct.Price = Console.ReadLine();
+                                        MyLog.Log($"1p [searching and correcting product]: Inputed new product with data: name {newProduct.Name} categoryId {newProduct.CategoryId} providerId {newProduct.ProviderId} price {newProduct.Price}", LogLevel.Information);
+                                    }
                                         newLink.ChangeProduct(name, newProduct);
                                         MyLog.Log($"1p [searching and correcting product]: Product in SQLBD with name [{name}] was corrected to new product with name [{newProduct.Name}]", LogLevel.Warning);
                                         products = newLink.ReadProduct();
-                                    }
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"\nThe product with Name [{name}] didn`t find!");
-                                    MyLog.Log($"1p [searching and correcting product]: The product with name [{name}] in list didn`t find", LogLevel.Warning);
+                                    Console.SetCursorPosition(0, 15);
+                                    //Console.WriteLine($"\nThe correcting product with Name [{name}] was canceled!");
+                                    MyLog.Log($"1p [searching and correcting of product]: The correcting product with name [{name}] was canceled", LogLevel.Warning);
                                 }
                             }
                             else
                             {
                                 Console.WriteLine("\nThe list of products are empty yet!\n");
-                                MyLog.Log("1p [searching and correcting product]: The list of products are empty yet", LogLevel.Warning);
+                                MyLog.Log("1p [searching and correcting of product]: The list of products are empty yet", LogLevel.Warning);
                             }
-                            Console.WriteLine("\nPress any key to continue");
-                            Console.ReadKey();
-                            MyLog.Log("Exit from 1p [searching and correcting product]", LogLevel.Information);
+                            //Console.WriteLine("\nPress any key to continue");
+                            //Console.ReadKey();
+                            Thread.Sleep(2000);
+                            MyLog.Log("Exit from 1p [searching and correcting of product]", LogLevel.Information);
                             break;
 
                         case "2":
